@@ -3,8 +3,8 @@
 //dotenv.config();
 const apiURL = 'https://www.googleapis.com/books/v1';
 //accessing the key from .env
-const apiKey = process.env.API_KEY;
-
+//const apiKey = process.env.API_KEY;
+const apiKey = 'AIzaSyDMqxEZnqeeBWHc6798LShJFHOHzepkWBg';
 //console.log(apiKey);
 let searchButton = document.getElementById("searchButton");
 
