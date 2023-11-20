@@ -2,25 +2,50 @@
 //const dotenv = require('dotenv');
 //dotenv.config();
 const apiURL = 'https://www.googleapis.com/books/v1';
+let freeBook;
+let data;
 //accessing the key from .env
 //const apiKey = process.env.API_KEY;
 const apiKey = 'AIzaSyDMqxEZnqeeBWHc6798LShJFHOHzepkWBg';
 //console.log(apiKey);
 let searchButton = document.getElementById("searchButton");
+const favAPI = 'https://655bbf43ab37729791a98ae9.mockapi.io/fav/v1';
 
 
-
-const fetchAPIData = async (searchTerms) => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const requestUrl = `${apiURL}/volumes?q=${encodeURIComponent(searchTerms)}&key=${apiKey}`;
+        const requestUrl = `https://www.googleapis.com/books/v1/volumes?q=programming&orderBy=newest&key=${apiKey}`;
+        //console.log('Request URL:', requestUrl);
         //const requestUrl = `https://www.googleapis.com/books/v1/volumes?q=${searchTerms}&key=${apiKey}`;
         const response = await fetch(requestUrl);
-        const data = await response.json();
+        freeBook = await response.json();
+        displayBookResults(freeBook.items);
+    } catch (error) {
+        console.error('fetch error', error);
+    }
+
+});
+
+
+
+const fetchAPIData = async (bookTitle) => {
+    try {
+        const requestUrl = `${apiURL}/volumes?q=${encodeURIComponent(bookTitle)}&key=${apiKey}`;
+        //const requestUrl = `https://www.googleapis.com/books/v1/volumes?q=${searchTerms}&key=${apiKey}`;
+        const response = await fetch(requestUrl);
+        data = await response.json();
         return data;
     } catch (error) {
         console.error('fetch error', error);
     }
 }
+
+const toggleDescription = (event) => {
+    const descripToggle = event.currentTarget.querySelector('.description');
+    if (descripToggle) {
+        descripToggle.classList.toggle('show');
+    }
+};
 
 const displayBookResults = (books) => {
 
@@ -31,18 +56,39 @@ const displayBookResults = (books) => {
 
     books.forEach((item, index) => {
         const volumeInfo = item.volumeInfo;
-        const bookElement = document.createElement('div');
+        const bookElement = document.createElement('article');
+        bookElement.classList.add('bookArticle'); //giving class to articles
         const imageLink = volumeInfo.imageLinks?.thumbnail || ''; //get the book image or show nothing if image not available
+        const descriptionText = volumeInfo.description || 'No description available';
+        const addToFavoritesButton = document.createElement('button');
+        addToFavoritesButton.classList.add('addToFavoritesButton');
+        addToFavoritesButton.setAttribute('data-book-id', item.id);
+        addToFavoritesButton.textContent = 'Add to Favorites';
+
+
         bookElement.innerHTML = `
-            <p><strong>Book ${index + 1}:</strong></p>  
+            
             <img src="${imageLink}" alt="Book Cover">
             <p><strong>Title:</strong> ${volumeInfo.title}</p>
             <p><strong>Authors:</strong> ${volumeInfo.authors ? volumeInfo.authors.join(', ') : 'Unknown'}</p>
-            <p><strong>Description:</strong> ${volumeInfo.description || 'No description available'}</p>
+            <p class="des"><strong>Description</strong><span class ="description"> ${descriptionText}</span></p>
             
-            <hr>
+            
+            
         `;
+        addToFavoritesButton.addEventListener('click', async (event) => {
+            event.stopPropagation(); // Prevent the click event from triggering the bookElement click event
+            const bookId = event.currentTarget.getAttribute('data-book-id');
+            const book = freeBook.items.find(item => item.id === bookId) || data.items.find(item => item.id === bookId);
+            if (book) {
+                saveToFavorite(book);
+            }
+        });
+        bookElement.appendChild(addToFavoritesButton);
+
         bookResultsDiv.appendChild(bookElement);
+        //toggle description
+        bookElement.addEventListener('click', toggleDescription);
     });
 };
 
@@ -65,24 +111,45 @@ searchButton.addEventListener('click', async () => {
 });
 
 
-//searchButton.addEventListener('click', searchBooks)
-
-
-
-/*const printBook = async () => {
-    book = await fetchAPIData();
-    book.items
-        .filter(item => item.volumeInfo.title.toLowerCase().includes(searchTerms.toLowerCase()))
-        .forEach((item, index) => {
-            const volumeInfo = item.volumeInfo;
-            console.log(`Book ${index + 1}:`);
-            console.log(`Title: ${volumeInfo.title}`);
-            console.log(`Authors: ${volumeInfo.authors ? volumeInfo.authors.join(', ') : 'Unknown'}`);
-            console.log(`Description: ${volumeInfo.description || 'No description available'}`);
-            console.log('---');
+const saveToFavorite = async (book) => {
+    try {
+        const response = await fetch(`${favAPI}/favourite`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: book.volumeInfo.title,
+                authors: book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown',
+                description: book.volumeInfo.description || 'No description available',
+                imageLink: book.volumeInfo.imageLinks?.thumbnail || '',
+            }),
         });
+        if (response.ok) {
+            alert("book added to favorites");
+        } else {
+            alert("failed to add");
+        }
+    } catch (error) {
+        console.error("error saving to favorite", error);
+    }
 };
 
-printBook();*/
+const displayFavorite = async () => {
+    try {
+        const response = await fetch(`${favAPI}/favourite`);
+        if (response.ok) {
+            const favoriteList = await response.json();
+            // Display the user's favorite list on the page
+            console.log('User\'s Favorite List:', favoriteList);
+        } else {
+            console.error('Failed to fetch user\'s favorite list.');
+        }
+    } catch (error) {
+        console.error('Error fetching favorite list:', error);
+    }
 
 
+}
+
+displayFavorite();

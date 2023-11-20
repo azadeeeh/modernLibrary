@@ -1,0 +1,173 @@
+
+
+body {
+
+    background-color:#464062;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header{
+
+    color: #EAC28B;
+    
+}
+    
+
+h1{
+    text-align: center;
+}
+
+.searchBox{
+    align-items: center;
+    text-align: center;
+}
+
+label{
+    color: #EAC28B;
+}
+
+input {
+    border-radius: 20px;
+    box-shadow:  0 0 2px 2px #5c5583;
+    border : none;
+}
+
+input:focus {
+    color:  #EAC28B;
+    outline:none;
+    box-shadow: 0 0 2px 2px #5c5583;
+    text-align: center;
+}
+
+
+
+#searchButton{
+    color:#EAC28B;
+    background-color:#5c5583 ;
+    border-radius: 20px;
+    border: none;
+    padding: 5px;
+    box-shadow:  0 0 2px 2px #EAC28B;
+    
+}
+
+#bookResults{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content: space-between;
+    width: 70%;
+    margin: auto;
+    margin-top: 40px;
+    font-family: 'Courier New', Courier, monospace;
+    
+}
+
+.fav-home{
+    text-align: center;
+    margin-top: 40px;
+   
+}
+
+.link{
+    
+    color:#EAC28B;
+    margin-top:30px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    font-size: 30px;
+
+   
+    
+   
+}
+
+.link:hover{
+    color: lavender;
+}
+
+.bookArticle{
+
+    height: 450px;
+    width: 400px;
+    display: felx;
+    flex-direction: column;
+    cursor: pointer;
+    align-items: center;
+    text-align: center;
+    margin:10px;
+    margin-top:40px;
+    margin-bottom: 40px;
+    border-radius: 20px;
+    color:antiquewhite;
+    background-color:#5c5583;
+    box-shadow:  0 0 10px 10px #EAC28B;
+    padding-top: 20px;
+    
+}
+
+.bookArticle img {
+  width: 150px;
+  height: 200px;
+  margin-top: 10px;
+}
+
+
+.bookArticle p{
+    background-color: #5c5583;
+}
+
+.bookArticle p strong{
+    background-color: #5c5583;
+}
+
+
+
+.description{
+
+    display:none; /* does not show description at first*/
+    margin: 30px 0;
+    position: relative;
+    z-index: 1;
+    width: 1000px;
+    background-color:#EAC28B;
+    border-radius: 20px;
+    right: 300px;
+    padding:50px;
+    color: #464062;
+    
+    
+    
+}
+
+
+.description.show{
+    display:block ; /*show description after clicking it*/
+   
+}
+.des:hover{
+    color: orange;
+
+}
+.des-fav{
+    padding-bottom: 0;
+    
+
+}
+
+.des-fav:hover{
+    color:orange;
+}
+
+
+footer{
+    text-align: center;
+    color: #EAC28B;
+    margin-top: auto;
+    
+}
