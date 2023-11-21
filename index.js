@@ -2,7 +2,7 @@
 //const dotenv = require('dotenv');
 //dotenv.config();
 const apiURL = 'https://www.googleapis.com/books/v1';
-let freeBook;
+let theBook;
 let data;
 //accessing the key from .env
 //const apiKey = process.env.API_KEY;
@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Request URL:', requestUrl);
         //const requestUrl = `https://www.googleapis.com/books/v1/volumes?q=${searchTerms}&key=${apiKey}`;
         const response = await fetch(requestUrl);
-        freeBook = await response.json();
-        displayBookResults(freeBook.items);
+        theBook = await response.json();
+        displayBookResults(theBook.items);
     } catch (error) {
         console.error('fetch error', error);
     }
@@ -60,10 +60,11 @@ const displayBookResults = (books) => {
         bookElement.classList.add('bookArticle'); //giving class to articles
         const imageLink = volumeInfo.imageLinks?.thumbnail || ''; //get the book image or show nothing if image not available
         const descriptionText = volumeInfo.description || 'No description available';
-        const addToFavoritesButton = document.createElement('button');
-        addToFavoritesButton.classList.add('addToFavoritesButton');
-        addToFavoritesButton.setAttribute('data-book-id', item.id);
-        addToFavoritesButton.textContent = 'Add to Favorites';
+        //adding the favourite button to each article
+        const favoritesButton = document.createElement('button'); //creating the button
+        favoritesButton.classList.add('favoritesButton'); //giving class to the button
+        favoritesButton.setAttribute('data-book-id', item.id); //set data-book-id to item.id
+        favoritesButton.textContent = 'Add to Favorites'; //setting the button's text content 
 
 
         bookElement.innerHTML = `
@@ -76,15 +77,15 @@ const displayBookResults = (books) => {
             
             
         `;
-        addToFavoritesButton.addEventListener('click', async (event) => {
+        favoritesButton.addEventListener('click', async (event) => {
             event.stopPropagation(); // Prevent the click event from triggering the bookElement click event
             const bookId = event.currentTarget.getAttribute('data-book-id');
-            const book = freeBook.items.find(item => item.id === bookId) || data.items.find(item => item.id === bookId);
+            const book = theBook.items.find(item => item.id === bookId) || data.items.find(item => item.id === bookId);
             if (book) {
                 saveToFavorite(book);
             }
         });
-        bookElement.appendChild(addToFavoritesButton);
+        bookElement.appendChild(favoritesButton);
 
         bookResultsDiv.appendChild(bookElement);
         //toggle description
@@ -110,7 +111,7 @@ searchButton.addEventListener('click', async () => {
     displayBookResults(filteredBooks);
 });
 
-
+//posting the favourite book to the mock api
 const saveToFavorite = async (book) => {
     try {
         const response = await fetch(`${favAPI}/favourite`, {
@@ -134,6 +135,8 @@ const saveToFavorite = async (book) => {
         console.error("error saving to favorite", error);
     }
 };
+
+//check to see it works
 
 const displayFavorite = async () => {
     try {
